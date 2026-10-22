@@ -1,4 +1,4 @@
-# Architecture of Personality 0.3
+# Architecture of Personality 0.3.1
 
 Open-source pilot application for architectural interviews (MIT license).
 
@@ -32,8 +32,14 @@ This is a public demonstration prototype, NOT a production system for confidenti
 
 The generated findings are design hypotheses, not psychological diagnosis or an architectural approval.
 
-## v0.3 changes
+## v0.3.1 changes
 - Project brief with six optional fields and missing-data warnings.
 - Grounded AI prompt with exact question texts, separate facts, needs and hypotheses.
 - No changes to public URL after updating GitHub; Render auto-deploys.
 - Demo only: no authentication or secure storage for real client data.
+
+## v0.3.1
+- Versioned local storage and automatic removal of only invalid legacy answers (other answers preserved).
+- Server validation errors shown to the user instead of a generic connection error.
+- Larger AI response limit and stricter source-grounding instructions.
+- Improved PDF print pagination.
