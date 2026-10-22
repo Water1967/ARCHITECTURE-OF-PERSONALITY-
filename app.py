@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI,HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from programming import build_program
 P=Path(__file__).parent
 Q=json.loads((P/'questions.json').read_text(encoding='utf8'))
 QM={q['id']:q for q in Q}
@@ -39,7 +40,7 @@ async def analyze(x:Payload):
    except (ValueError,TypeError): raise HTTPException(422,'Невалидна стойност: '+field)
  required={'site_location':'Местоположение на имота','site_area':'Площ на имота','target_area':'Желана площ на жилището','budget':'Бюджет','site_orientation':'Ориентация и достъп','site_constraints':'Ограничения на терена'}
  brief_missing=[v for k,v in required.items() if not brief.get(k)]
- result={'brief':brief,'brief_missing':brief_missing,'questions':{q['id']:q['title'] for q in Q},'project':x.project,'residents':x.residents,'findings':findings,'missing':missing,'comparisons':comparisons,'notice':'Архитектурно интервю, не психологическа диагностика или завършен проект.'}
+ result={'program':build_program(x.residents,brief),'brief':brief,'brief_missing':brief_missing,'questions':{q['id']:q['title'] for q in Q},'project':x.project,'residents':x.residents,'findings':findings,'missing':missing,'comparisons':comparisons,'notice':'Архитектурно интервю, не психологическа диагностика или завършен проект.'}
  if x.ai:
   if not os.getenv('OPENAI_API_KEY'):result['ai_error']='Няма конфигуриран OPENAI_API_KEY.'
   else:
