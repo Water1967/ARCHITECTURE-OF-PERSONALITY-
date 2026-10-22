@@ -41,4 +41,37 @@ def build_program(residents, brief):
         area_check['status']='необходима оптимизация' if target<gross_min else 'ориентировъчно съвместимо, без проверка на РЗП'
         if target<gross_min:warnings.append('Целевата РЗП е по-малка от сумата на минималните зони; прегледайте комбиниране на функции и действителната площ.')
     if missing:warnings.append('Липсва информация: '+', '.join(missing)+'.')
-    return {'rooms':rooms,'outdoor':outdoor,'links':[{'from':a,'to':b,'relation':c,'reason':d} for a,b,c,d in edges], 'area_check':area_check,'warnings':warnings,'profile_count':len(residents),'completed_profiles':len(completed),'method':'Правила v0.4; предложенията не са чертеж или окончателно архитектурно задание.'}
+    alternatives=build_alternatives(rooms, completed, brief)
+    return {'alternatives':alternatives,'rooms':rooms,'outdoor':outdoor,'links':[{'from':a,'to':b,'relation':c,'reason':d} for a,b,c,d in edges], 'area_check':area_check,'warnings':warnings,'profile_count':len(residents),'completed_profiles':len(completed),'method':'Правила v0.4; предложенията не са чертеж или окончателно архитектурно задание.'}
+
+
+def build_alternatives(rooms, completed, brief):
+    """Scenario comparisons, not optimized floor plans or independent area estimates."""
+    ids={r['id'] for r in rooms}
+    base=[r for r in rooms if r['id'] not in ('office','studio','retreat')]
+    special=[r for r in rooms if r['id'] in ('office','studio','retreat')]
+    def sums(items):
+        return [sum(r['area_range_m2'][i] for r in items) for i in (0,1)]
+    def scenario(key,title,merge,notes,tradeoffs):
+        # A merge is a planning possibility, not a guaranteed saving.
+        return {'id':key,'title':title,'base_zone_range_m2':sums(base),
+          'unmerged_special_range_m2':sums(special),'merged_zone_ids':merge,
+          'area_status':'Не е изчислена площ за обединените функции; нужна е проектна проверка.',
+          'notes':notes,'tradeoffs':tradeoffs,
+          'evidence':sorted({qid for r in special for qid in r.get('evidence',[])})}
+    variants=[scenario('compact','А · Компактна организация',
+        [r['id'] for r in special],
+        'Проверете дали кабинетът, творческата работа и уединението могат да споделят една гъвкава зона.',
+        'При едновременни дейности може да липсва тишина или лично пространство.'),
+      scenario('balanced','Б · Балансирана организация',
+        [k for k in ('office','retreat') if k in ids],
+        'Възможно е работното място и кътът за уединение да се комбинират, а шумната практическа дейност да се отдели.',
+        'Нужни са проверка на оборудването, шумовете и реалната честота на ползване.'),
+      scenario('separated','В · Разделени функции',[],
+        'Проверете отделни помещения за работа, практическа дейност и уединение, само ако едновременното им използване го оправдава.',
+        'Повече помещения могат да увеличат площта и разходите.')]
+    return {'variants':variants,'rules':'Няма автоматично изчислени икономии от обединяване; диапазоните не са РЗП.',
+      'verification':['Кои дейности протичат едновременно?', 'Какви са шумът, оборудването и съхранението?',
+      'Колко спални и санитарни помещения са необходими за всички обитатели?',
+      'Кои функции могат да споделят площ без загуба на комфорт?',
+      'Проверени ли са валутата, конструкцията, комуникациите и площите по норматив?']}

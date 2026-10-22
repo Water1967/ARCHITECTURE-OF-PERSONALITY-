@@ -15,6 +15,8 @@ class Payload(BaseModel):
  brief:dict={}
 @app.get('/')
 def home():return FileResponse(P/'index.html')
+@app.get('/api/version')
+def version():return {'version':'0.4.2','functional_program':True}
 @app.get('/api/questions')
 def questions():return Q
 @app.post('/api/analyze')
