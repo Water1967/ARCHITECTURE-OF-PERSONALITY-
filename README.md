@@ -1,4 +1,4 @@
-# Architecture of Personality 0.2
+# Architecture of Personality 0.3
 
 Open-source pilot application for architectural interviews (MIT license).
 
@@ -31,3 +31,9 @@ Open http://127.0.0.1:8000
 This is a public demonstration prototype, NOT a production system for confidential resident data. Responses remain in browser storage until analysis, when they are sent to the server. AI mode additionally sends analysis context to the configured AI provider. Do not enter sensitive personal information. No authentication, server-side storage, access controls, consent management, abuse controls, rate limiting or production security review is included. Add these before public use with real participants.
 
 The generated findings are design hypotheses, not psychological diagnosis or an architectural approval.
+
+## v0.3 changes
+- Project brief with six optional fields and missing-data warnings.
+- Grounded AI prompt with exact question texts, separate facts, needs and hypotheses.
+- No changes to public URL after updating GitHub; Render auto-deploys.
+- Demo only: no authentication or secure storage for real client data.
